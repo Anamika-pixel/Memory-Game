@@ -162,6 +162,86 @@ window.onload = () => {
     displayTasks();
 };
 
+// const displayTasks = () => {
+//     if (Object.keys(localStorage).length > 0) {
+//         tasksDiv.style.display = "inline-block";
+//     } else {
+//         tasksDiv.style.display = "none";
+//     }
+
+//     tasksDiv.innerHTML = "";
+
+//     tasks = Object.keys(localStorage);  // Use already declared tasks variable
+//     tasks = tasks.sort();
+
+//     for (let key of tasks) {
+//         let classValue = "";
+
+//         let value = localStorage.getItem(key);
+//         let parsedValue = JSON.parse(value);
+        
+//         let taskInnerDiv = document.createElement("div");
+//         taskInnerDiv.classList.add("task");
+//         taskInnerDiv.setAttribute("id", key);
+//         taskInnerDiv.innerHTML = `<span id="taskname">${key.split("_")[1]} </span>`;
+
+//         let editButton = document.createElement("button");
+//         editButton.classList.add("edit");
+//         editButton.innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: #000000;"></i>`;
+
+//         if (!parsedValue.completed) {
+//             editButton.style.visibility = "visible";
+//         } else {
+//             editButton.style.visibility = "hidden";
+//             taskInnerDiv.classList.add("completed");
+//         }
+
+//         taskInnerDiv.appendChild(editButton);
+//         taskInnerDiv.innerHTML += `<button class="delete"><i class="fa-solid fa-trash" style="color: #000000;"></i></button>`;
+//         tasksDiv.appendChild(taskInnerDiv);
+//     }
+
+//     tasks = document.querySelectorAll(".task");
+//     tasks.forEach((element) => {
+//         element.onclick = () => {
+//             let taskId = element.id.split("_")[0];
+//             let taskText = element.querySelector("#taskname").innerText;
+//             let taskCompleted = element.classList.contains("completed");
+
+//             updateStorage(taskId, taskText, !taskCompleted); // Toggle the completed state
+//         };
+//     });
+
+//     editTasks = document.getElementsByClassName("edit");
+//     Array.from(editTasks).forEach((element) => {
+//         element.addEventListener("click", (e) => {
+//             e.stopPropagation();
+
+//             disableButtons(true);
+
+//             let parent = element.parentElement;
+//             newTaskInput.value = parent.querySelector("#taskname").innerText;
+
+//             UpdateNote = parent.id;
+
+//             parent.remove();
+//         });
+//     });
+
+//     deleteTasks = document.getElementsByClassName("delete");
+//     Array.from(deleteTasks).forEach((element) => {
+//         element.addEventListener("click", (e) => {
+//             e.stopPropagation();
+
+//             let parent = element.parentElement;
+//             removeTask(parent.id);
+//             parent.remove();
+//             count -= 1;
+//         });
+//     });
+// };
+
+
 const displayTasks = () => {
     if (Object.keys(localStorage).length > 0) {
         tasksDiv.style.display = "inline-block";
@@ -169,17 +249,15 @@ const displayTasks = () => {
         tasksDiv.style.display = "none";
     }
 
-    tasksDiv.innerHTML = "";
+    tasksDiv.innerHTML = ""; // Clear the tasks div
 
-    tasks = Object.keys(localStorage);  // Use already declared tasks variable
+    tasks = Object.keys(localStorage);
     tasks = tasks.sort();
 
     for (let key of tasks) {
-        let classValue = "";
-
         let value = localStorage.getItem(key);
         let parsedValue = JSON.parse(value);
-        
+
         let taskInnerDiv = document.createElement("div");
         taskInnerDiv.classList.add("task");
         taskInnerDiv.setAttribute("id", key);
@@ -201,45 +279,42 @@ const displayTasks = () => {
         tasksDiv.appendChild(taskInnerDiv);
     }
 
-    tasks = document.querySelectorAll(".task");
-    tasks.forEach((element) => {
-        element.onclick = () => {
-            let taskId = element.id.split("_")[0];
-            let taskText = element.querySelector("#taskname").innerText;
-            let taskCompleted = element.classList.contains("completed");
+    // Use event delegation to handle task clicks
+    tasksDiv.addEventListener("click", (e) => {
+        if (e.target.classList.contains("task")) {
+            let taskId = e.target.id.split("_")[0];
+            let taskText = e.target.querySelector("#taskname").innerText;
+            let taskCompleted = e.target.classList.contains("completed");
 
             updateStorage(taskId, taskText, !taskCompleted); // Toggle the completed state
-        };
-    });
+        }
 
-    editTasks = document.getElementsByClassName("edit");
-    Array.from(editTasks).forEach((element) => {
-        element.addEventListener("click", (e) => {
+        // Handle edit button click
+        if (e.target.classList.contains("edit")) {
             e.stopPropagation();
 
             disableButtons(true);
 
-            let parent = element.parentElement;
+            let parent = e.target.parentElement;
             newTaskInput.value = parent.querySelector("#taskname").innerText;
 
             UpdateNote = parent.id;
 
             parent.remove();
-        });
-    });
+        }
 
-    deleteTasks = document.getElementsByClassName("delete");
-    Array.from(deleteTasks).forEach((element) => {
-        element.addEventListener("click", (e) => {
+        // Handle delete button click
+        if (e.target.classList.contains("delete")) {
             e.stopPropagation();
 
-            let parent = element.parentElement;
+            let parent = e.target.parentElement;
             removeTask(parent.id);
             parent.remove();
             count -= 1;
-        });
+        }
     });
 };
+
 
 const disableButtons = (bool) => {
     let editButtons = document.getElementsByClassName("edit");
